@@ -38,11 +38,9 @@ public class ControllerClass {
 					logger.info("Name value" + jsonObject.get(str));
 					break;
 				}
-
 			}
 		}
 		return new ResponseEntity<String>("Successfully Compiled Unirest ", HttpStatus.OK);
-
 	}
 
 	@RequestMapping(path = "/confDetails", method = RequestMethod.GET, produces = "application/json")
@@ -51,18 +49,40 @@ public class ControllerClass {
 		HttpResponse<JsonNode> jsonResponse = Unirest.get("https://restcountries.eu/rest/v2/callingcode/{code}")
 				.header("accept", "application/json").header("content-type", "application/json")
 				.routeParam("code", "372").asJson();
-		
-		return new ResponseEntity<String>("Successfully Compiled Unirest ", HttpStatus.OK);
 
+		JSONArray jsonArray = jsonResponse.getBody().getArray();
+		for (int iter = 0; iter < jsonArray.length(); iter++) {
+			JSONObject jsonObject = jsonArray.getJSONObject(iter);
+			for (Object obj : jsonObject.keySet()) {
+				String str = (String) obj;
+				if (str.equals("name")) {
+					logger.info("Name value: " + jsonObject.getString(str));
+					break;
+				}
+			}
+		}
+		return new ResponseEntity<String>("Successfully Compiled Unirest ", HttpStatus.OK);
 	}
 
 	@RequestMapping(path = "/confDetail", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<?> thirdPartyApi3(@RequestParam(value = "code", required = true) Long code)
 			throws UnirestException {
 		logger.info("*****************************Using Request Pram************************");
-		HttpResponse<JsonNode> jsonResponse = Unirest.get("https://restcountries.eu/rest/v2/callingcode")
-				.header("accept", "application/json").header("content-type", "application/json").asJson();
-		String body = jsonResponse.getBody().toString();
+		String url = "https://restcountries.eu/rest/v2/callingcode/" + code;
+		HttpResponse<JsonNode> jsonResponse = Unirest.get(url).header("accept", "application/json")
+				.header("content-type", "application/json").asJson();
+
+		JSONArray jsonArray = jsonResponse.getBody().getArray();
+		for (int iter = 0; iter < jsonArray.length(); iter++) {
+			JSONObject jsonObject = (JSONObject) jsonArray.get(iter);
+			for (Object obj : jsonObject.keySet()) {
+				String str = (String) obj;
+				if (str.equals("name")) {
+					logger.info("Name value: " + jsonObject.getString(str));
+					break;
+				}
+			}
+		}
 		return new ResponseEntity<String>("Successfully Compiled Unirest ", HttpStatus.OK);
 
 	}
