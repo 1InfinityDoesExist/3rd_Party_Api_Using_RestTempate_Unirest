@@ -1,5 +1,7 @@
 package com.thirdparty.example.controller;
 
+import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -77,9 +79,32 @@ public class ControllerClass {
 			JSONObject jsonObject = (JSONObject) jsonArray.get(iter);
 			for (Object obj : jsonObject.keySet()) {
 				String str = (String) obj;
-				if (str.equals("name")) {
+
+				switch (str) {
+
+				case "name":
 					logger.info("Name value: " + jsonObject.getString(str));
-					break;
+					continue;
+
+				case "altSpellings":
+
+					JSONArray altJsonArray = jsonObject.getJSONArray(str);
+					for (int jter = 0; jter < altJsonArray.length(); jter++) {
+						String value = altJsonArray.getString(jter);
+						System.out.println(value);
+					}
+					continue;
+
+				case "latlng":
+					JSONArray latlngArray = jsonObject.getJSONArray(str);
+					for (int jter = 0; jter < latlngArray.length(); jter++) {
+						long value = latlngArray.getInt(jter);
+						System.out.println(value);
+					}
+					continue;
+
+				default:
+					logger.info("************************End Of Switch Case*********************************");
 				}
 			}
 		}
