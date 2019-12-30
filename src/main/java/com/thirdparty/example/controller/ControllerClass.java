@@ -1,7 +1,5 @@
 package com.thirdparty.example.controller;
 
-import java.util.List;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -225,22 +223,22 @@ public class ControllerClass {
 							if (str4.equals("acronym")) {
 								System.out.println(str4 + " value is :- " + object1.getString(str4));
 							}
-							if(str4.equals("name")) {
+							if (str4.equals("name")) {
 								System.out.println(str4 + " value is :- " + object1.getString(str4));
 							}
-							if(str4.equals("otherAcronyms")) {
+							if (str4.equals("otherAcronyms")) {
 								JSONArray jArray = object1.getJSONArray(str4);
-								for(int pter = 0; pter < jArray.length(); pter++) {
+								for (int pter = 0; pter < jArray.length(); pter++) {
 									continue;
 								}
-								
+
 							}
-							if(str4.equals("otherNames")) {
+							if (str4.equals("otherNames")) {
 								JSONArray jArray = object1.getJSONArray(str4);
-								for(int pter = 0; pter < jArray.length(); pter++) {
+								for (int pter = 0; pter < jArray.length(); pter++) {
 									continue;
 								}
-								
+
 							}
 						}
 					}
