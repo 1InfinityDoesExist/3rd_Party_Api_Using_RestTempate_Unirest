@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -148,4 +149,66 @@ public class RestTemplateIssues {
 		return new ResponseEntity<String>("SuccessFully Retrieved Data For Employee", HttpStatus.OK);
 	}
 
+	@RequestMapping(path = "/get", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
+	public ResponseEntity<?> getAllEmployee() throws ParseException {
+		final String url = "http://dummy.restapiexample.com/api/v1/employees";
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+		JSONParser parser = new JSONParser();
+		JSONArray jsonArray = (JSONArray) parser.parse(response.getBody());
+
+		logger.info("JsonArray Size :- " + jsonArray.size());
+		for (int iter = 0; iter < jsonArray.size(); iter++) {
+			JSONObject jsonObject = (JSONObject) jsonArray.get(iter);
+			logger.info("JsonObject :- " + jsonObject);
+			for (Object object : jsonObject.keySet()) {
+				String propName = (String) object;
+				if (propName.equals("employee_name")) {
+					logger.info("Name:---->" + jsonObject.get(propName));
+					break;
+				}
+			}
+		}
+		return new ResponseEntity<String>("SuccessFully Persisted", HttpStatus.OK);
+	}
+
+	// delete method returns void ....however in Returns some response...!!!
+	@RequestMapping(path = "/delete", method = RequestMethod.DELETE)
+	public ResponseEntity<?> deleteEmployee(@RequestParam(value = "id", required = true) String id)
+			throws ParseException {
+		String url = "http://dummy.restapiexample.com/api/v1/delete/{id}";
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("id", id);
+
+		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.delete(url, params);
+
+		return new ResponseEntity<String>("SuccessFully Deteted", HttpStatus.OK);
+	}
+
+	@RequestMapping(path = "/update", method = RequestMethod.PUT)
+	public ResponseEntity<?> updateEmployee(@RequestParam(value = "id", required = true) String id) {
+
+		final String url = "http://dummy.restapiexample.com/api/v1/update/{id}";
+
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("id", id);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+		Map<String, String> request = new HashMap<String, String>();
+		request.put("name", "Avinash Rocks");
+		request.put("salary", "600000");
+		request.put("age", "24");
+
+		HttpEntity<String> entity = new HttpEntity<String>(new Gson().toJson(request), headers);
+		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.put(url, entity, params);
+
+		return new ResponseEntity<String>("Successfully Updated", HttpStatus.OK);
+
+	}
 }
