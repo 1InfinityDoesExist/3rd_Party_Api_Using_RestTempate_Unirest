@@ -1,6 +1,5 @@
 package com.thirdparty.example.controller;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,9 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.Gson;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -162,9 +160,11 @@ public class RestTemplateController {
 		payloadObject.put("salary", "600000");
 		payloadObject.put("age", "24");
 
-		String url = "http://dummy.restapiexample.com/api/v1/create";
+		final String url = "http://dummy.restapiexample.com/api/v1/create";
+		logger.info("i am here");
 		HttpResponse<JsonNode> jsonNode = Unirest.post(url).header("accept", "application/json")
-				.header("content-type", "application/json").fields(payloadObject).asJson();
+				.header("content-type", "application/json").body(new Gson().toJson(payloadObject)).asJson();
+		logger.info("i am here too");
 		JSONObject jsonObject = jsonNode.getBody().getObject();
 		for (Object object : jsonObject.keySet()) {
 			String propName = (String) object;
@@ -215,9 +215,8 @@ public class RestTemplateController {
 
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put("content-type", "application/json");
-		headers.put("accept", "application/json");
 
-		String url = "http://dummy.restapiexample.com/api/v1/create";
+		final String url = "http://dummy.restapiexample.com/api/v1/create";
 		HttpResponse<JsonNode> jsonNode = Unirest.post(url).headers(headers).body(payloadObject).asJson();
 		JSONObject jsonObject = jsonNode.getBody().getObject();
 		for (Object object : jsonObject.keySet()) {
@@ -257,8 +256,132 @@ public class RestTemplateController {
 
 		return new ResponseEntity<String>("Successfully Created", HttpStatus.OK);
 	}
-	
-	
-	
+
+	// get operation
+	@RequestMapping(path = "/get/typicode", method = RequestMethod.GET)
+	public ResponseEntity<?> getEmployeeDetials(@RequestParam(value = "id") Long id) throws UnirestException {
+		final String url = "https://jsonplaceholder.typicode.com/posts/{id}";
+
+		HttpResponse<JsonNode> jsonNode = Unirest.get(url).header("Content-Type", "application/json")
+				.header("Accept", "application/json").routeParam("id", id.toString()).asJson();
+
+		JSONObject jsonObject = jsonNode.getBody().getObject();
+		for (Object object : jsonObject.keySet()) {
+			String propName = (String) object;
+
+			switch (propName) {
+			case "userId":
+				Object obj1 = (Object) jsonObject.get(propName);
+				Integer userIdValue = (Integer) obj1;
+				logger.info("userId value is:-" + userIdValue);
+				continue;
+
+			case "id":
+				Object obj2 = (Object) jsonObject.get(propName);
+				Integer idValue = (Integer) obj2;
+				logger.info("id value is :-" + idValue);
+				continue;
+
+			case "title":
+				Object obj3 = (Object) jsonObject.get(propName);
+				String titleValue = (String) obj3;
+				logger.info("Title Value is:- " + titleValue);
+				continue;
+
+			case "body":
+				Object obj4 = (Object) jsonObject.get(propName);
+				String bodyValue = (String) obj4;
+				logger.info("Body Value is : " + bodyValue);
+				continue;
+
+			default:
+				logger.info("***************End Of Switch Case************************");
+
+			}
+		}
+
+		return new ResponseEntity<String>("Successfully Retrieved Data From DB", HttpStatus.OK);
+
+	}
+
+	// OnlineAPi
+	@RequestMapping(path = "/get/free", method = RequestMethod.GET)
+	public ResponseEntity<?> getFreeApi(@RequestParam(value = "page") Long page) throws UnirestException {
+		final String url = "https://reqres.in/api/users?page={pageNumber}";
+		HttpResponse<JsonNode> jsonNode = Unirest.get(url).header("Accept", "application/json")
+				.header("Content-Type", "application/json").routeParam("pageNumber", page.toString()).asJson();
+
+		JSONObject jsonObject = jsonNode.getBody().getObject();
+		for (Object object : jsonObject.keySet()) {
+			String propName = (String) object;
+
+			switch (propName) {
+			case "page":
+				Object object1 = jsonObject.get(propName);
+				Integer pageValue = (Integer) object1;
+				logger.info("Page :- " + pageValue);
+				continue;
+			case "per_page":
+				Object object2 = jsonObject.get(propName);
+				Integer perPageValue = (Integer) object2;
+				logger.info("PerPageValue :-" + perPageValue);
+				continue;
+
+			case "total":
+				Object object3 = jsonObject.get(propName);
+				Integer totalValue = (Integer) object3;
+				logger.info("Total :- " + totalValue);
+				continue;
+			case "total_pages":
+				Object object4 = jsonObject.get(propName);
+				Integer totalPagesValue = (Integer) object4;
+				logger.info("TotalPages :-" + totalPagesValue);
+				continue;
+			case "data":
+				JSONArray jsonArray = jsonObject.getJSONArray(propName);
+				for (int iter = 0; iter < jsonArray.length(); iter++) {
+					JSONObject jsonArrayObject = (JSONObject) jsonArray.get(iter);
+					for (Object obj : jsonArrayObject.keySet()) {
+						String prop = (String) obj;
+						switch (prop) {
+						case "id":
+							Object obj1 = jsonArrayObject.get(prop);
+							Integer obj1Value = (Integer) obj1;
+							logger.info("Data ID: " + obj1Value);
+							continue;
+
+						case "email":
+							Object obj2 = jsonArrayObject.get(prop);
+							String obj2Value = (String) obj2;
+							logger.info("Email :- " + obj2Value);
+							continue;
+
+						case "first_name":
+							Object obj3 = jsonArrayObject.get(prop);
+							String obj3Value = (String) obj3;
+							logger.info("FirstName:- " + obj3Value);
+							continue;
+
+						case "last_name":
+							Object obj4 = jsonArrayObject.get(prop);
+							String obj4Value = (String) obj4;
+							logger.info("last_name:-" + obj4Value);
+							continue;
+
+						case "avatar":
+							Object obj5 = jsonArrayObject.get(prop);
+							String obj5Value = (String) obj5;
+							logger.info("AvatarValue:-" + obj5Value);
+							continue;
+						}
+					}
+				}
+			default:
+				logger.info("************End of Switch Case:*************");
+			}
+		}
+		return new ResponseEntity<String>("Successfully Done", HttpStatus.OK);
+
+	}
 
 }

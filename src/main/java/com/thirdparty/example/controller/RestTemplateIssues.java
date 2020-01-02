@@ -25,6 +25,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 @RestController
 @RequestMapping(path = "/api/object/rest")
@@ -183,7 +187,6 @@ public class RestTemplateIssues {
 
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.delete(url, params);
-
 		return new ResponseEntity<String>("SuccessFully Deteted", HttpStatus.OK);
 	}
 
@@ -207,8 +210,12 @@ public class RestTemplateIssues {
 		HttpEntity<String> entity = new HttpEntity<String>(new Gson().toJson(request), headers);
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.put(url, entity, params);
+		
 
 		return new ResponseEntity<String>("Successfully Updated", HttpStatus.OK);
 
 	}
+
+	// Friend API
+
 }
