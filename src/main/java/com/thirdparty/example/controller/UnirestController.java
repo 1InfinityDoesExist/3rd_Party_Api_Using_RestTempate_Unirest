@@ -25,11 +25,73 @@ public class UnirestController {
 	@RequestMapping(path = "/first", method = RequestMethod.GET)
 	public ResponseEntity<?> unirestIssue() throws UnirestException {
 		logger.info("*****************Inside Get All Method*****************");
-		final String url = "https://swapi.co/api/films/";
+		final String url = "https://swapi.co/api/people/";
 
 		HttpResponse<JsonNode> jsonNode = Unirest.get(url).header("Accept", "application/json")
 				.header("Content-Type", "application/json").asJson();
+		JSONObject jsonObject = jsonNode.getBody().getObject();
 
+		for (Object object : jsonObject.keySet()) {
+			String propName = (String) object;
+
+			switch (propName) {
+			case "count":
+				Integer propValue = (Integer) jsonObject.get(propName);
+				logger.info("Count Value:-" + propValue);
+				continue;
+
+			case "next":
+				// String nextProp = String.valueOf(jsonObject.get(propName));
+				String nextProp = (String) jsonObject.get(propName);
+				logger.info("Next Value:-" + nextProp);
+				continue;
+
+			case "results":
+				JSONArray jsonArray = (JSONArray) jsonObject.get(propName);
+				for (int iter = 0; iter < jsonArray.length(); iter++) {
+					JSONObject resultObject = (JSONObject) jsonArray.get(iter);
+					for (Object obj : resultObject.keySet()) {
+						String resultPropName = (String) obj;
+						switch (resultPropName) {
+						case "homeworld":
+							String homeValue = (String) resultObject.get(resultPropName);
+							logger.info("HomeWorld:- " + homeValue);
+							continue;
+
+						case "films":
+							JSONArray filmJsonArray = (JSONArray) resultObject.get(resultPropName);
+							for (int jter = 0; jter < filmJsonArray.length(); jter++) {
+								Object filmObject = filmJsonArray.get(jter);
+								String filmValue = (String) filmObject;
+								logger.info("FilmValue :- " + filmValue);
+							}
+							continue;
+
+						case "edited":
+							Object editObject = resultObject.get(resultPropName);
+							String editValue = (String) editObject;
+							logger.info("EditValue:-" + editValue);
+							continue;
+						case "vehicles":
+							JSONArray vehicleArray = (JSONArray) resultObject.get(resultPropName);
+							for (int jter = 0; jter < vehicleArray.length(); jter++) {
+								Object vehicleObject = vehicleArray.get(jter);
+								String vehicleValue = (String) vehicleObject;
+								logger.info("Vehicle Value:-" + vehicleValue);
+								break;
+							}
+
+						default:
+							logger.info("***************End of Inner Switch Case***************");
+						}
+					}
+				}
+
+			default:
+				logger.info("***************************End Of Switch Case**************************");
+			}
+
+		}
 		return new ResponseEntity<String>("Successfully Executed", HttpStatus.OK);
 
 	}
