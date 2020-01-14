@@ -22,15 +22,21 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+
 @RestController
 @RequestMapping(path = "/api/object/template")
+@Api(value = "Unirest Contoller", description = "Using Unirest To Save Data And Perform Other Operation")
 public class RestTemplateController {
 
 	private static final Logger logger = LoggerFactory.getLogger(RestTemplateController.class);
 
-	@RequestMapping(path = "/get", method = RequestMethod.GET, produces = "appllication/json")
+	@RequestMapping(path = "/get1", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(code = HttpStatus.OK, reason = "SuccessFully Retrieved Data From Unirest (3rd Party Api)")
+	@ApiOperation(value = "Retrieving Data From 3rd Party api", notes = "I am using unirest to cal third party apis")
 	public ResponseEntity<?> restTemplate1() throws UnirestException {
 
 		String url = "http://dummy.restapiexample.com/api/v1/employees";
@@ -78,8 +84,12 @@ public class RestTemplateController {
 		return new ResponseEntity<String>("ResponseEntity", HttpStatus.OK);
 	}
 
-	@RequestMapping(path = "/get", method = RequestMethod.GET, produces = "application/json")
-	public ResponseEntity<?> getEmployeeDetialsById(@RequestParam(value = "id", required = true) String id)
+	@RequestMapping(path = "/get2", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	@ResponseStatus(code = HttpStatus.OK, reason = "Successfully Retrieved Data from The Database")
+	@ApiOperation(value = "Get Employee Resource By ID", notes = "For this one as well I am using 3rd Party Api")
+	public ResponseEntity<?> getEmployeeDetialsById(
+			@ApiParam(value = "id", required = true, example = "123") @RequestParam(value = "id", required = true) String id)
 			throws UnirestException {
 
 		String url = "http://dummy.restapiexample.com/api/v1/employee/";
@@ -127,7 +137,9 @@ public class RestTemplateController {
 	}
 
 	@RequestMapping(path = "/delete", method = RequestMethod.DELETE)
-	public ResponseEntity<?> deleteEmployeeDetials(@RequestParam(value = "id", required = true) String id)
+	@ApiOperation(value = "Delete Employe By ID", notes = "Using 3rd Party Api to Delete Employee Data")
+	public ResponseEntity<?> deleteEmployeeDetials(
+			@ApiParam(value = "id", required = true) @RequestParam(value = "id", required = true) String id)
 			throws UnirestException {
 		String url = "http://dummy.restapiexample.com/api/v1/delete/";
 		HttpResponse<JsonNode> jsonNode = Unirest.delete(url + id).header("content-type", "application/json")
@@ -153,6 +165,7 @@ public class RestTemplateController {
 
 	// One Way
 	@RequestMapping(path = "/create1", method = RequestMethod.POST, produces = "application/json")
+	@ApiOperation(value = "Create Employee Resource", notes = "Using Unirest to post Emoloyee Details")
 	public ResponseEntity<?> createEmployeeDetails() throws UnirestException {
 
 		Map<String, Object> payloadObject = new HashMap<String, Object>();
@@ -206,6 +219,7 @@ public class RestTemplateController {
 
 	// The Other way
 	@RequestMapping(path = "/create2", method = RequestMethod.POST, produces = "application/json")
+	@ApiOperation(value = "Create Employee by Using Unirest", notes = "Using 3rd Party Api To create Resource")
 	public ResponseEntity<?> createEmployeeResource() throws UnirestException {
 
 		JSONObject payloadObject = new JSONObject();
@@ -259,7 +273,9 @@ public class RestTemplateController {
 
 	// get operation
 	@RequestMapping(path = "/get/typicode", method = RequestMethod.GET)
-	public ResponseEntity<?> getEmployeeDetials(@RequestParam(value = "id") Long id) throws UnirestException {
+	@ApiOperation(value = "Get Employee Details By Id", notes = "Using Unirest To get Data From 3rd Party Api")
+	public ResponseEntity<?> getEmployeeDetials(
+			@ApiParam(value = "id", required = true) @RequestParam(value = "id") Long id) throws UnirestException {
 		final String url = "https://jsonplaceholder.typicode.com/posts/{id}";
 
 		HttpResponse<JsonNode> jsonNode = Unirest.get(url).header("Content-Type", "application/json")
@@ -306,7 +322,10 @@ public class RestTemplateController {
 
 	// OnlineAPi
 	@RequestMapping(path = "/get/free", method = RequestMethod.GET)
-	public ResponseEntity<?> getFreeApi(@RequestParam(value = "page") Long page) throws UnirestException {
+	@ApiOperation(value = "Unirest To Get Resourc By Page ", notes = "Using 3rd party Apito get Resource")
+	public ResponseEntity<?> getFreeApi(
+			@ApiParam(value = "page", required = true) @RequestParam(value = "page") Long page)
+			throws UnirestException {
 		final String url = "https://reqres.in/api/users?page={pageNumber}";
 		HttpResponse<JsonNode> jsonNode = Unirest.get(url).header("Accept", "application/json")
 				.header("Content-Type", "application/json").routeParam("pageNumber", page.toString()).asJson();
